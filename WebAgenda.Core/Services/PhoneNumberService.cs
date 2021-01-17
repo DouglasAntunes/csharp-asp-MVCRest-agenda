@@ -35,7 +35,7 @@ namespace WebAgenda.Core.Services
             if (phoneNumber == null) return null;
             phoneNumber.DDD = newPhone.DDD;
             phoneNumber.Number = newPhone.Number;
-            phoneNumber.Person = newPhone.Person;
+            phoneNumber.Contact = newPhone.Contact;
             _dbCtx.Update(phoneNumber);
             await _dbCtx.SaveChangesAsync();
             return phoneNumber;

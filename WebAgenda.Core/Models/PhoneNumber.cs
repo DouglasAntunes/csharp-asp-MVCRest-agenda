@@ -6,18 +6,18 @@
         public int Number { get; set; }
         public short DDD { get; set; }
         public int? PersonId { get; set; }
-        public virtual Person Person { get; set; }
+        public virtual Contact Contact { get; set; }
 
         public PhoneNumber()
         {
         }
 
-        public PhoneNumber(int id, int number, short dDD, Person person)
+        public PhoneNumber(int id, int number, short dDD, Contact contact)
         {
             Id = id;
             Number = number;
             DDD = dDD;
-            Person = person;
+            Contact = contact;
         }
     }
 }

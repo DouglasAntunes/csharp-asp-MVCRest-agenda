@@ -7,7 +7,7 @@ namespace WebAgenda.Core.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Person",
+                name: "Contact",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -16,7 +16,7 @@ namespace WebAgenda.Core.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Person", x => x.Id);
+                    table.PrimaryKey("PK_Contact", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -27,23 +27,24 @@ namespace WebAgenda.Core.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Number = table.Column<int>(type: "int", nullable: false),
                     DDD = table.Column<short>(type: "smallint", nullable: false),
-                    PersonId = table.Column<int>(type: "int", nullable: true)
+                    PersonId = table.Column<int>(type: "int", nullable: true),
+                    ContactId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PhoneNumber", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PhoneNumber_Person_PersonId",
-                        column: x => x.PersonId,
-                        principalTable: "Person",
+                        name: "FK_PhoneNumber_Contact_ContactId",
+                        column: x => x.ContactId,
+                        principalTable: "Contact",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_PhoneNumber_PersonId",
+                name: "IX_PhoneNumber_ContactId",
                 table: "PhoneNumber",
-                column: "PersonId");
+                column: "ContactId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -52,7 +53,7 @@ namespace WebAgenda.Core.Migrations
                 name: "PhoneNumber");
 
             migrationBuilder.DropTable(
-                name: "Person");
+                name: "Contact");
         }
     }
 }

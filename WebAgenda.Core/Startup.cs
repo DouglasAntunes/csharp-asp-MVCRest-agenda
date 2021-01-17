@@ -27,7 +27,7 @@ namespace WebAgenda.Core
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IPhoneNumberService, PhoneNumberService>();
-            services.AddScoped<IPersonService, PersonService>();
+            services.AddScoped<IContactService, ContactService>();
 
             services.AddControllers().AddNewtonsoftJson();
             services.AddControllersWithViews();

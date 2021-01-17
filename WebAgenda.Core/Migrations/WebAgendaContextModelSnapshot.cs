@@ -19,7 +19,7 @@ namespace WebAgenda.Core.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.2");
 
-            modelBuilder.Entity("WebAgenda.Core.Models.Person", b =>
+            modelBuilder.Entity("WebAgenda.Core.Models.Contact", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -31,7 +31,7 @@ namespace WebAgenda.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Person");
+                    b.ToTable("Contact");
                 });
 
             modelBuilder.Entity("WebAgenda.Core.Models.PhoneNumber", b =>
@@ -40,6 +40,9 @@ namespace WebAgenda.Core.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .UseIdentityColumn();
+
+                    b.Property<int?>("ContactId")
+                        .HasColumnType("int");
 
                     b.Property<short>("DDD")
                         .HasColumnType("smallint");
@@ -52,22 +55,22 @@ namespace WebAgenda.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PersonId");
+                    b.HasIndex("ContactId");
 
                     b.ToTable("PhoneNumber");
                 });
 
             modelBuilder.Entity("WebAgenda.Core.Models.PhoneNumber", b =>
                 {
-                    b.HasOne("WebAgenda.Core.Models.Person", "Person")
+                    b.HasOne("WebAgenda.Core.Models.Contact", "Contact")
                         .WithMany("PhoneNumbers")
-                        .HasForeignKey("PersonId")
+                        .HasForeignKey("ContactId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.Navigation("Person");
+                    b.Navigation("Contact");
                 });
 
-            modelBuilder.Entity("WebAgenda.Core.Models.Person", b =>
+            modelBuilder.Entity("WebAgenda.Core.Models.Contact", b =>
                 {
                     b.Navigation("PhoneNumbers");
                 });

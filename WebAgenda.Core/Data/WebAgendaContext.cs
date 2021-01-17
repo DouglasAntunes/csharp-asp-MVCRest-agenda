@@ -13,14 +13,14 @@ namespace WebAgenda.Core.Data
         { 
         }
 
-        public DbSet<Person> Person { get; set; }
+        public DbSet<Contact> Contact { get; set; }
         public DbSet<PhoneNumber> PhoneNumber { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Person>()
+            modelBuilder.Entity<Contact>()
                 .HasMany(p => p.PhoneNumbers)
-                .WithOne(p => p.Person)
+                .WithOne(p => p.Contact)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }
