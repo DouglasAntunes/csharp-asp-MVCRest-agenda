@@ -15,5 +15,13 @@ namespace WebAgenda.Core.Data
 
         public DbSet<Person> Person { get; set; }
         public DbSet<PhoneNumber> PhoneNumber { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Person>()
+                .HasMany(p => p.PhoneNumbers)
+                .WithOne(p => p.Person)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 }

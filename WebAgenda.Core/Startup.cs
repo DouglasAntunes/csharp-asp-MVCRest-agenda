@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebAgenda.Core.Data;
+using WebAgenda.Core.Services;
 
 namespace WebAgenda.Core
 {
@@ -25,6 +26,10 @@ namespace WebAgenda.Core
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IPhoneNumberService, PhoneNumberService>();
+            services.AddScoped<IPersonService, PersonService>();
+
+            services.AddControllers().AddNewtonsoftJson();
             services.AddControllersWithViews();
 
             services.AddDbContext<WebAgendaContext>(options => options.UseSqlServer(Configuration.GetConnectionString("WebAgendaContext")));

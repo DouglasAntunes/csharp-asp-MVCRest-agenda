@@ -9,7 +9,7 @@ namespace WebAgenda.Core.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public ICollection<PhoneNumber> PhoneNumbers = new List<PhoneNumber>();
+        public virtual ICollection<PhoneNumber> PhoneNumbers { get; set; } = new List<PhoneNumber>();
 
         public Person()
         {
