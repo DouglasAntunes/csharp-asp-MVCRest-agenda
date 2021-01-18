@@ -49,7 +49,8 @@
                         </div>
                         <div class="form-row">
                             <div class="form-group col">
-                                <input type="text" class="form-control" id="ctcName" name="name" />
+                                <input type="text" class="form-control" id="ctcName" name="name" required />
+                                <label id="ctcName-error" class="error text-danger" for="ctcName"></label>
                             </div>
                         </div>
                     </form>
@@ -62,15 +63,72 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="phoneModalForm" tabindex="-1" aria-labelledby="contactModalFormTitle" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="phoneModalFormTitle">Adicionar Número</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="phoneModalFormBody">
+                    <form id="pnForm">
+                        <div class="form-row">
+                            <div class="form-group col-4">
+                                <label for="pnName">DDD</label>
+                            </div>
+                            <div class="form-group col">
+                                <label for="pnNumber">Number</label>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-4">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">(</span>
+                                    </div>
+                                    <input type="number" min="2" max="2" class="form-control hide-arrows" id="pnDDD" name="ddd" required />
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">)</span>
+                                    </div>
+                                </div>
+                                <label id="pnDDD-error" class="error text-danger" for="pnDDD"></label>
+                            </div>
+                            <div class="form-group col">
+                                <input type="number" min="8" max="9" class="form-control hide-arrows" id="pnNumber" name="number" required />
+                                <label id="pnNumber-error" class="error text-danger" for="pnNumber"></label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning btn-sm" id="phoneModalFormClear">Limpar Formulário</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="phoneModalFormSave">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section scripts{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
     <script>
         $(document).ready(function () {
             const apiUrl = "https://localhost:44381/api";
             const loadSpinner = $("#loading-spinner");
+            $('#ctcForm').validate({
+                rules: {
+                    name: { required: true }
+                },
+                messages: {
+                    name: { required: "O nome do contato é obrigatório!" }
+                }
+            });
 
-            function loadData() {
+            function loadAllContacts() {
                 const container = $("#contact-list");
                 $.ajax(`${apiUrl}/contact`)
                     .done(function (data) {
@@ -80,63 +138,82 @@
                         } else {
                             container.empty()
                                 .append(`<li class="list-group-item list-group-item-dark">
-                                            <div class="d-flex w-100 justify-content-end">
-                                                <button class="btn btn-sm btn-info" id="btn-new-ctc">Novo Contato</button>
-                                            </div>
+                                             <div class="d-flex w-100 justify-content-end">
+                                                 <button class="btn btn-sm btn-info" id="btn-new-ctc">Novo Contato</button>
+                                             </div>
                                          </li>`);
                             data.forEach(function (contact) {
-                                let resultComponentString = `<li class="list-group-item list-group-item-action">
-                                                                <div class="d-flex w-100 justify-content-between">
-                                                                    <div class="contact-item" data-id="${contact.id}">${contact.name}</div>
-                                                                    <div>
-                                                                        <button class="btn btn-sm btn-secondary btn-edit-ctc" data-id="${contact.id}">Editar</button>
-                                                                        <button class="btn btn-sm btn-danger btn-rem-ctc" data-id="${contact.id}">Remover</button>
-                                                                    </div>
-                                                                </div>
-                                                             </li>`;
-                                container.append(resultComponentString);
+                                container.append(`<li class="list-group-item list-group-item-action">
+                                                      <div class="d-flex w-100 justify-content-between">
+                                                          <div class="contact-item" data-id="${contact.id}">${contact.name}</div>
+                                                          <div>
+                                                              <button class="btn btn-sm btn-secondary btn-edit-ctc" data-id="${contact.id}">Editar</button>
+                                                              <button class="btn btn-sm btn-danger btn-rem-ctc" data-id="${contact.id}">Remover</button>
+                                                          </div>
+                                                      </div>
+                                                  </li>`);
                             });
-                            registerActions();
+                            registerContactActions();
                         }
                     })
                     .fail(function () {
                         loadSpinner.hide(0);
                         container.replaceWith('<strong class="text-danger">Erro ao ler API</strong>');
+                    });
+            }
+            loadAllContacts();
+
+            function loadContactToModal(id) {
+                $.ajax(`${apiUrl}/contact/${id}`)
+                    .done(function (data) {
+                        $('#contactModalViewTitle').empty().append(`Contato - ${data.name}`);
+                        $('#contactModalViewBody').empty()
+                            .append('<p>Telefones:</p>')
+                            .append('<ul class="list-group">')
+                            .append(`<li class="list-group-item list-group-item-dark">
+                                         <div class="d-flex w-100 justify-content-end">
+                                             <button class="btn btn-sm btn-info" id="btn-new-pn">Novo Telefone</button>
+                                         </div>
+                                     </li>`);
+
+                        data.phoneNumbers.forEach(function (phoneNumber) {
+                            $('#contactModalViewBody').append(`<li class="list-group-item">
+                                                                   <div class="d-flex w-100 justify-content-between">
+                                                                       (${phoneNumber.ddd}) ${phoneNumber.number}
+                                                                       <div>
+                                                                           <button class="btn btn-sm btn-secondary btn-edit-pn" data-id="${phoneNumber.id}">Editar</button>
+                                                                           <button class="btn btn-sm btn-danger btn-rem-pn" data-id="${phoneNumber.id}">Remover</button>
+                                                                       </div>
+                                                                   </div>
+                                                               </li>`);
+                        });
+                        $('#contactModalViewBody').append('</ul>')
+                        registerPhoneActions();
                 });
             }
-            loadData();
 
-            function registerActions() {
+            function registerPhoneActions() {
+                $('#btn-new-pn').click(function (e) {
+                    e.preventDefault();
+                    $('#phoneModalForm').modal('show');
+                });
+
+                $('.btn-rem-pn').each(function () {
+                    $(this).click(function (e) {
+                        e.preventDefault();
+                        if (confirm('Deseja Remover o número ?')) {
+                            $.ajax(`${apiUrl}/phonenumber/${$(this).attr('data-id')}`, { method: 'DELETE' })
+                                .done(loadAllContacts);
+                        }
+                    })
+                });
+            }
+
+            function registerContactActions() {
                 $('.contact-item').each(function () {
                     $(this).click(function () {
-                        $.ajax(`${apiUrl}/contact/${$(this).attr('data-id')}`)
-                            .done(function (data) {
-                                console.log(data);
-                                $('#contactModalViewTitle').empty().append(`Contato - ${data.name}`);
-                                $('#contactModalViewBody').empty()
-                                    .append('<p>Telefones:</p>')
-                                    .append('<ul class="list-group">')
-                                    .append(`<li class="list-group-item list-group-item-dark">
-                                                <div class="d-flex w-100 justify-content-end">
-                                                    <button class="btn btn-sm btn-info btn-new-pn">Novo Telefone</button>
-                                                </div>
-                                            </li>`);
-
-                                data.phoneNumbers.forEach(function (phoneNumber) {
-                                    $('#contactModalViewBody').append(`<li class="list-group-item">
-                                                                           <div class="d-flex w-100 justify-content-between">
-                                                                                (${phoneNumber.ddd}) ${phoneNumber.number}
-                                                                                <div>
-                                                                                    <button class="btn btn-sm btn-secondary btn-edit-pn" data-id="${phoneNumber.id}">Editar</button>
-                                                                                    <button class="btn btn-sm btn-danger btn-rem-pn" data-id="${phoneNumber.id}">Remover</button>
-                                                                                </div>
-                                                                            </div>
-                                                                       </li>`);
-                                });
-                                $('#contactModalViewBody').append('</ul>')
-                                
-                                $('#contactModalView').modal('show');
-                            });
+                        loadContactToModal($(this).attr('data-id'));
+                        $('#contactModalView').modal('show');
                     });
                 });
 
@@ -144,21 +221,22 @@
                     $('#contactModalForm').modal('show');
                 });
 
+                $('#contactModalFormClear').click(function () {
+                    $('#ctcName').val('');
+                });
+
                 $('#contactModalFormSave').click(function () {
-                    const name = $('#ctcName').val();
-                    if (name.length > 0) {
+                    if ($('#ctcForm').valid()) {
                         $.ajax(`${apiUrl}/contact`, {
                             method: 'POST',
                             contentType: 'application/json',
                             data: JSON.stringify({ "name": $('#ctcName').val() })
                         }).done(function () {
-                            loadData();
+                            loadAllContacts();
                         }).fail(function () {
 
                         });
                     }
-                    
-                    
                 });
 
                 $('.btn-rem-ctc').each(function () {
@@ -166,7 +244,7 @@
                         e.preventDefault();
                         if (confirm('Deseja Remover o contato ?')) {
                             $.ajax(`${apiUrl}/contact/${$(this).attr('data-id')}`, { method: 'DELETE' })
-                                .done(loadData);
+                                .done(loadAllContacts);
                         }
                     })
                 });
