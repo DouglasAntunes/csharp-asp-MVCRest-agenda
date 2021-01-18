@@ -67,7 +67,6 @@ $(document).ready(function () {
                 container.replaceWith('<strong class="text-danger">Erro ao ler API</strong>');
             });
     }
-    loadAllContacts();
 
     function loadContactToModal(id) {
         $.ajax(`${apiUrl}/contact/${id}`)
@@ -98,10 +97,29 @@ $(document).ready(function () {
             });
     }
 
+    function loadPhoneNumberToForm(id, successCB, failCB) {
+        $.ajax(`${apiUrl}/phonenumber/${id}`)
+            .done(function (data) {
+                $('#phId').val(data.id);
+                $('#pnDDD').val(data.ddd);
+                $('#pnNumber').val(data.number);
+                successCB();
+        }).fail(failCB);
+    }
+
     function registerPhoneActions() {
         $('#btn-new-pn').click(function (e) {
             e.preventDefault();
+            $('#phoneModalFormTitle').empty().append('Adicionar Número')
             $('#phoneModalForm').modal('show');
+        });
+
+        $('.btn-edit-pn').each(function () {
+            $(this).click(function (e) {
+                e.preventDefault();
+                $('#phoneModalFormTitle').empty().append('Editar Número')
+                loadPhoneNumberToForm($(this).data('id'), $('#phoneModalForm').modal('show'), alert("Erro ao obter número"));
+            })
         });
 
         $('.btn-rem-pn').each(function () {
@@ -155,4 +173,7 @@ $(document).ready(function () {
             })
         });
     }
+
+    // Main
+    loadAllContacts();
 });
