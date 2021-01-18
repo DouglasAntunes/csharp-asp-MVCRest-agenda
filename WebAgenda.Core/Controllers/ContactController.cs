@@ -37,6 +37,15 @@ namespace WebAgenda.Core.Controllers
             return new ContactDT(contact);
         }
 
+        // GET api/<PersonController>
+        [HttpGet("find/{name}")]
+        public async Task<ActionResult<ContactDT>> GetAsync(string name)
+        {
+            Contact contact = await _contactService.FindByName(name);
+            if (contact == null) return NotFound();
+            return new ContactDT(contact);
+        }
+
         // POST api/<PersonController>
         [HttpPost]
         public async Task<ActionResult<ContactDT>> PostAsync([FromBody] ContactDT contactDT)

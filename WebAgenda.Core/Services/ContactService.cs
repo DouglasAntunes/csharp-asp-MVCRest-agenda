@@ -28,6 +28,23 @@ namespace WebAgenda.Core.Services
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
+        public async Task<Contact> FindByName(string name)
+        {
+            var contactFound = (from contact in _dbCtx.Contact
+                                where contact.Name.Contains(name)
+                                select new Contact()
+                                {
+                                    Id = contact.Id,
+                                    Name = contact.Name,
+                                    PhoneNumbers = (from pn in _dbCtx.PhoneNumber
+                                                    where pn.ContactId == contact.Id
+                                                    select pn).ToList()
+                                }).FirstOrDefaultAsync();
+            /*return await _dbCtx.Contact.Include(c => c.PhoneNumbers)
+                .FirstOrDefaultAsync(c => c.Name.Contains(name));*/
+            return await contactFound;
+        }
+
         public async Task<Contact> SaveAsync(Contact contact)
         {
             _dbCtx.Contact.Add(contact);

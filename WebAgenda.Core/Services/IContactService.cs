@@ -9,6 +9,7 @@ namespace WebAgenda.Core.Services
     {
         Task<IEnumerable<Contact>> ListAllAsync();
         Task<Contact> FindById(int id);
+        Task<Contact> FindByName(string name);
         Task<Contact> SaveAsync(Contact contact);
         Task<Contact> UpdateById(int id, Contact newContact);
         Task DeleteByIdAsync(int id);
