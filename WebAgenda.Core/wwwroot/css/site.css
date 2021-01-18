@@ -74,15 +74,6 @@ body {
     width: 70% !important;
 }
 
-/* Multiple modals fix */
-.modal:nth-of-type(even) {
-    z-index: 1052 !important;
-}
-
-.modal-backdrop.show:nth-of-type(even) {
-    z-index: 1051 !important;
-}
-
 /* Hide arrows */
 /* Chrome, Safari, Edge, Opera */
 input.hide-arrows::-webkit-outer-spin-button,
