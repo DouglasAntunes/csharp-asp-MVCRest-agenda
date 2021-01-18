@@ -44,20 +44,20 @@ $(document).ready(function () {
                 } else {
                     container.empty()
                         .append(`<li class="list-group-item list-group-item-dark">
-                                             <div class="d-flex w-100 justify-content-end">
-                                                 <button class="btn btn-sm btn-info" id="btn-new-ctc">Novo Contato</button>
-                                             </div>
-                                         </li>`);
+                                     <div class="d-flex w-100 justify-content-end">
+                                         <button class="btn btn-sm btn-info" id="btn-new-ctc">Novo Contato</button>
+                                     </div>
+                                 </li>`);
                     data.forEach(function (contact) {
                         container.append(`<li class="list-group-item list-group-item-action">
-                                                      <div class="d-flex w-100 justify-content-between">
-                                                          <div class="contact-item" data-id="${contact.id}">${contact.name}</div>
-                                                          <div>
-                                                              <button class="btn btn-sm btn-secondary btn-edit-ctc" data-id="${contact.id}">Editar</button>
-                                                              <button class="btn btn-sm btn-danger btn-rem-ctc" data-id="${contact.id}">Remover</button>
-                                                          </div>
-                                                      </div>
-                                                  </li>`);
+                                              <div class="d-flex w-100 justify-content-between">
+                                                  <div class="contact-item" data-id="${contact.id}">${contact.name}</div>
+                                                  <div>
+                                                      <button class="btn btn-sm btn-secondary btn-edit-ctc" data-id="${contact.id}">Editar</button>
+                                                      <button class="btn btn-sm btn-danger btn-rem-ctc" data-id="${contact.id}">Remover</button>
+                                                  </div>
+                                              </div>
+                                          </li>`);
                     });
                     registerContactActions();
                 }
@@ -83,14 +83,14 @@ $(document).ready(function () {
 
                 data.phoneNumbers.forEach(function (phoneNumber) {
                     $('#contactModalViewBody').append(`<li class="list-group-item">
-                                                                   <div class="d-flex w-100 justify-content-between">
-                                                                       (${phoneNumber.ddd}) ${phoneNumber.number}
-                                                                       <div>
-                                                                           <button class="btn btn-sm btn-secondary btn-edit-pn" data-id="${phoneNumber.id}">Editar</button>
-                                                                           <button class="btn btn-sm btn-danger btn-rem-pn" data-id="${phoneNumber.id}">Remover</button>
-                                                                       </div>
-                                                                   </div>
-                                                               </li>`);
+                                                           <div class="d-flex w-100 justify-content-between">
+                                                               (${phoneNumber.ddd}) ${phoneNumber.number}
+                                                               <div>
+                                                                   <button class="btn btn-sm btn-secondary btn-edit-pn" data-id="${phoneNumber.id}">Editar</button>
+                                                                   <button class="btn btn-sm btn-danger btn-rem-pn" data-id="${phoneNumber.id}">Remover</button>
+                                                               </div>
+                                                           </div>
+                                                       </li>`);
                 });
                 $('#contactModalViewBody').append('</ul>')
                 registerPhoneActions();
