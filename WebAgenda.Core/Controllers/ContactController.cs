@@ -39,11 +39,10 @@ namespace WebAgenda.Core.Controllers
 
         // GET api/<PersonController>
         [HttpGet("find/{name}")]
-        public async Task<ActionResult<ContactDT>> GetAsync(string name)
+        public async Task<ActionResult<IEnumerable<ContactDT>>> GetAsync(string name)
         {
-            Contact contact = await _contactService.FindByName(name);
-            if (contact == null) return NotFound();
-            return new ContactDT(contact);
+            IEnumerable<Contact> contacts = await _contactService.FindByName(name);
+            return contacts.ToList().ConvertAll(p => new ContactDT(p)).ToList();
         }
 
         // POST api/<PersonController>
