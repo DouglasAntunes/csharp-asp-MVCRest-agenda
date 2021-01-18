@@ -143,6 +143,14 @@
                 }
             });
 
+            $('#pnNumber').on('keydown', function (e) {
+                if (!((e.keyCode > 95 && e.keyCode < 106) //Numpad0-9
+                    || (e.keyCode > 47 && e.keyCode < 58) //1-9
+                    || e.keyCode == 8)) { //Bskp
+                    return false;
+                }
+            });
+
             function loadAllContacts() {
                 const container = $("#contact-list");
                 $.ajax(`${apiUrl}/contact`)
