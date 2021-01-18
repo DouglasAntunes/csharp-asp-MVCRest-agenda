@@ -5,7 +5,7 @@
         public int Id { get; set; }
         public int Number { get; set; }
         public short DDD { get; set; }
-        public int? PersonId { get; set; }
+        public int? ContactId { get; set; }
         public virtual Contact Contact { get; set; }
 
         public PhoneNumber()
