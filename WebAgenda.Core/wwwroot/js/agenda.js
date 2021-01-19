@@ -107,8 +107,7 @@ $(document).ready(function () {
             $('#contactModalForm').modal('show');
         });
 
-        $('#btn-new-pn').click(function (e) {
-            e.preventDefault();
+        $('#btn-new-pn').click(function () {
             $('#phoneModalFormTitle').empty().append('Adicionar Número');
             $('#phoneModalFormSave').attr('data-contact', $(this).attr('data-contact'));
             $('#phId').val(0);
@@ -193,21 +192,23 @@ $(document).ready(function () {
 
     function registerPhoneActions() {
         $('.btn-edit-pn').each(function () {
-            $(this).click(function (e) {
-                e.preventDefault();
+            $(this).click(function () {
+                const ctcId = $(this).attr('data-contact');
+                $('#phoneModalFormSave').attr('data-contact', ctcId);
                 $('#phoneModalFormTitle').empty().append('Editar Número');
-                loadPhoneNumberToForm($(this).attr('data-id'), $('#phoneModalForm').modal('show'), function () { alert("Erro ao obter número"); });
-            })
+                loadPhoneNumberToForm($(this).attr('data-id'),
+                    function () { $('#phoneModalForm').modal('show'); },
+                    function () { alert("Erro ao obter número"); });
+            });
         });
 
         $('.btn-rem-pn').each(function () {
-            $(this).click(function (e) {
-                e.preventDefault();
+            $(this).click(function () {
                 if (confirm('Deseja Remover o número ?')) {
                     $.ajax(`${apiUrl}/phonenumber/${$(this).attr('data-id')}`, { method: 'DELETE' })
                         .done(loadAllContacts);
                 }
-            })
+            });
         });
     }
 
@@ -220,21 +221,21 @@ $(document).ready(function () {
         });
 
         $('.btn-edit-ctc').each(function () {
-            $(this).click(function (e) {
-                e.preventDefault();
+            $(this).click(function () {
                 $('#contactModalFormTitle').empty().append('Editar Contato');
-                loadContactToForm($(this).attr('data-id'), $('#contactModalForm').modal('show'), function () { alert("Erro ao obter número"); });
-            })
+                loadContactToForm($(this).attr('data-id'),
+                    function () { $('#contactModalForm').modal('show'); },
+                    function () { alert("Erro ao obter número"); });
+            });
         });
 
         $('.btn-rem-ctc').each(function () {
-            $(this).click(function (e) {
-                e.preventDefault();
+            $(this).click(function () {
                 if (confirm('Deseja Remover o contato ?')) {
                     $.ajax(`${apiUrl}/contact/${$(this).attr('data-id')}`, { method: 'DELETE' })
                         .done(loadAllContacts);
                 }
-            })
+            });
         });
     }
 
