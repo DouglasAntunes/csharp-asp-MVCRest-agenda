@@ -34,9 +34,18 @@ $(document).ready(function () {
         }
     });
 
+    function clearContactForm() {
+        $('#ctcName').val('');
+    }
+
+    function clearPhoneForm() {
+        $('#pnDDD').val('');
+        $('#pnNumber').val('');
+    }
+
     function registerModalActions() {
         $('#contactModalFormClear').click(function () {
-            $('#ctcName').val('');
+            clearContactForm();
         });
 
         $('#contactModalFormSave').click(function () {
@@ -53,6 +62,10 @@ $(document).ready(function () {
 
                 });
             }
+        });
+
+        $('#phoneModalFormClear').click(function () {
+            clearPhoneForm();
         });
     }
 
@@ -143,6 +156,7 @@ $(document).ready(function () {
             e.preventDefault();
             $('#phoneModalFormTitle').empty().append('Adicionar Número');
             $('#phId').val(0);
+            clearPhoneForm();
             $('#phoneModalForm').modal('show');
         });
 
@@ -176,6 +190,7 @@ $(document).ready(function () {
         $('#btn-new-ctc').click(function () {
             $('#contactModalFormTitle').empty().append('Adicionar Contato');
             $('#ctcId').val(0);
+            clearContactForm();
             $('#contactModalForm').modal('show');
         });
 
