@@ -97,6 +97,15 @@ $(document).ready(function () {
             });
     }
 
+    function loadContactToForm(id, successCB, failCB) {
+        $.ajax(`${apiUrl}/contact/${id}`)
+            .done(function (data) {
+                $('#ctcId').val(data.id);
+                $('#ctcName').val(data.name);
+                successCB();
+        }).fail(failCB);
+    }
+
     function loadPhoneNumberToForm(id, successCB, failCB) {
         $.ajax(`${apiUrl}/phonenumber/${id}`)
             .done(function (data) {
@@ -110,15 +119,16 @@ $(document).ready(function () {
     function registerPhoneActions() {
         $('#btn-new-pn').click(function (e) {
             e.preventDefault();
-            $('#phoneModalFormTitle').empty().append('Adicionar Número')
+            $('#phoneModalFormTitle').empty().append('Adicionar Número');
+            $('#phId').val(0);
             $('#phoneModalForm').modal('show');
         });
 
         $('.btn-edit-pn').each(function () {
             $(this).click(function (e) {
                 e.preventDefault();
-                $('#phoneModalFormTitle').empty().append('Editar Número')
-                loadPhoneNumberToForm($(this).data('id'), $('#phoneModalForm').modal('show'), alert("Erro ao obter número"));
+                $('#phoneModalFormTitle').empty().append('Editar Número');
+                loadPhoneNumberToForm($(this).data('id'), $('#phoneModalForm').modal('show'), function () { alert("Erro ao obter número"); });
             })
         });
 
@@ -142,6 +152,8 @@ $(document).ready(function () {
         });
 
         $('#btn-new-ctc').click(function () {
+            $('#contactModalFormTitle').empty().append('Adicionar Contato');
+            $('#ctcId').val(0);
             $('#contactModalForm').modal('show');
         });
 
@@ -151,8 +163,10 @@ $(document).ready(function () {
 
         $('#contactModalFormSave').click(function () {
             if ($('#ctcForm').valid()) {
-                $.ajax(`${apiUrl}/contact`, {
-                    method: 'POST',
+                const modalInputId = $('#ctcId').val();
+                const url = `${apiUrl}/contact${modalInputId == 0 ? '' : `/${$('#ctcId').val()}`}`;
+                $.ajax(url, {
+                    method: modalInputId == 0 ? 'POST' : 'PUT',
                     contentType: 'application/json',
                     data: JSON.stringify({ "name": $('#ctcName').val() })
                 }).done(function () {
@@ -161,6 +175,14 @@ $(document).ready(function () {
 
                 });
             }
+        });
+
+        $('.btn-edit-ctc').each(function () {
+            $(this).click(function (e) {
+                e.preventDefault();
+                $('#contactModalFormTitle').empty().append('Editar Contato');
+                loadContactToForm($(this).data('id'), $('#contactModalForm').modal('show'), function () { alert("Erro ao obter número"); });
+            })
         });
 
         $('.btn-rem-ctc').each(function () {
