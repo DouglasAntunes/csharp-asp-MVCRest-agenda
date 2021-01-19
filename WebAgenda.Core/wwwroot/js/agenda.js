@@ -119,6 +119,10 @@ $(document).ready(function () {
         $('.contact-modal-view-close').each(function () {
             $(this).click(function () { resetContactModalViewState(); });
         });
+
+        $('#contactModalView').on('hidden.bs.modal', function () {
+            resetContactModalViewState();
+        });
     }
 
     function loadAllContacts() {
