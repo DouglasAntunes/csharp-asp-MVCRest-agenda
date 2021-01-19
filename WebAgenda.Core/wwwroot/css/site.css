@@ -71,7 +71,13 @@ body {
 }
 
 .contact-item {
-    width: 70% !important;
+    width: 50%;
+}
+
+@media (min-width: 576px) {
+    .contact-item {
+        width: 75%;
+    }
 }
 
 /* Hide arrows */
