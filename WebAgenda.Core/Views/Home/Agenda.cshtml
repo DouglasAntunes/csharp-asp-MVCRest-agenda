@@ -5,13 +5,20 @@
 <div class="">
     <h2 class="mb-4">Contatos</h2>
 
-    <div class="d-flex justify-content-center">
-        <div class="spinner-border" role="status" id="loading-spinner">
-            <span class="sr-only">Carregando agenda...</span>
-        </div>
-    </div>
+    
 
     <ul class="list-group" id="contact-list">
+        <li class="list-group-item list-group-item-dark">
+            <div class="d-flex w-100 justify-content-end">
+                <button class="btn btn-sm btn-info" id="btn-new-ctc">Novo Contato</button>
+            </div>
+        </li>
+        <div class="d-flex justify-content-center">
+            <div class="spinner-border mt-5" role="status" id="loading-spinner-main">
+                <span class="sr-only">Carregando agenda...</span>
+            </div>
+        </div>
+        <div id="contact-list-content"></div>
     </ul>
 
     <div class="modal fade" id="contactModalView" tabindex="-1" aria-labelledby="contactModalViewTitle" aria-hidden="true">
@@ -19,14 +26,30 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="contactModalViewTitle"></h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close contact-modal-view-close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body" id="contactModalViewBody">
+                <div class="modal-body">
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border" role="status" id="loading-spinner-ctc">
+                            <span class="sr-only">Carregando dados...</span>
+                        </div>
+                    </div>
+                    <div id="contactModalViewBodyStatic">
+                        <p>Telefones:</p>
+                        <ul class="list-group">
+                            <li class="list-group-item list-group-item-dark">
+                                <div class="d-flex w-100 justify-content-end">
+                                    <button class="btn btn-sm btn-info" id="btn-new-pn" data-contact="0">Novo Telefone</button>
+                                </div>
+                            </li>
+                            <div id="contactModalViewBody"></div>
+                        </ul>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-secondary contact-modal-view-close" data-dismiss="modal">Fechar</button>
                 </div>
             </div>
         </div>
@@ -102,6 +125,7 @@
                             </div>
                         </div>
                         <input type="number" id="phId" name="id" disabled />
+                        <input type="number" id="phCtcId" name="ctcId" disabled />
                     </form>
                 </div>
                 <div class="modal-footer">

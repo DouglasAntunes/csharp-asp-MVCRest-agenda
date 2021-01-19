@@ -16,7 +16,9 @@
 /* Script */
 $(document).ready(function () {
     const apiUrl = "https://localhost:44381/api";
-    const loadSpinner = $("#loading-spinner");
+    const loadSpinnerMain = $("#loading-spinner-main");
+    const loadSpinnerCtc = $("#loading-spinner-ctc");
+
     $('#ctcForm').validate({
         rules: {
             name: { required: true }
@@ -43,15 +45,27 @@ $(document).ready(function () {
         $('#pnNumber').val('');
     }
 
+    function resetContactModalViewState() {
+        $('#contactModalViewBodyStatic').hide(0);
+        $('#btn-new-pn').attr('data-contact', 0);
+        $('#contactModalViewTitle').empty()
+        $('#contactModalViewBody').empty();
+        loadSpinnerCtc.show();
+    }
+
     function registerModalActions() {
         $('#contactModalFormClear').click(function () {
             clearContactForm();
         });
 
+        $('#phoneModalFormClear').click(function () {
+            clearPhoneForm();
+        });
+
         $('#contactModalFormSave').click(function () {
             if ($('#ctcForm').valid()) {
                 const modalInputId = $('#ctcId').val();
-                const url = `${apiUrl}/contact${modalInputId == 0 ? '' : `/${$('#ctcId').val()}`}`;
+                const url = `${apiUrl}/contact${modalInputId == 0 ? '' : `/${modalInputId}`}`;
                 $.ajax(url, {
                     method: modalInputId == 0 ? 'POST' : 'PUT',
                     contentType: 'application/json',
@@ -64,25 +78,58 @@ $(document).ready(function () {
             }
         });
 
-        $('#phoneModalFormClear').click(function () {
+        $('#phoneModalFormSave').click(function () {
+            //if ($('#pnForm').valid()) {
+            const contactId = $(this).attr('data-contact');
+            if (contactId == null) return;
+            const modalInputId = $('#phId').val();
+            const url = `${apiUrl}/phonenumber${modalInputId == 0 ? '' : `/${modalInputId}`}`;
+            $.ajax(url, {
+                method: modalInputId == 0 ? 'POST' : 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    "ddd": $('#pnDDD').val(),
+                    "number": $('#pnNumber').val(),
+                    contactId
+                })
+            }).done(function () {
+                //reload list
+            }).fail(function () {
+
+            });
+            //}
+        });
+
+        $('#btn-new-ctc').click(function () {
+            $('#contactModalFormTitle').empty().append('Adicionar Contato');
+            $('#ctcId').val(0);
+            clearContactForm();
+            $('#contactModalForm').modal('show');
+        });
+
+        $('#btn-new-pn').click(function (e) {
+            e.preventDefault();
+            $('#phoneModalFormTitle').empty().append('Adicionar Número');
+            $('#phoneModalFormSave').attr('data-contact', $(this).attr('data-contact'));
+            $('#phId').val(0);
             clearPhoneForm();
+            $('#phoneModalForm').modal('show');
+        });
+
+        $('.contact-modal-view-close').each(function () {
+            $(this).click(function () { resetContactModalViewState(); });
         });
     }
 
     function loadAllContacts() {
-        const container = $("#contact-list");
+        const container = $("#contact-list-content");
         $.ajax(`${apiUrl}/contact`)
             .done(function (data) {
-                loadSpinner.hide(0);
+                loadSpinnerMain.hide(0);
+                container.empty();
                 if (data.lenght == 0) {
                     container.replaceWith('<strong class="text-info">Lista Vazia</strong>');
                 } else {
-                    container.empty()
-                        .append(`<li class="list-group-item list-group-item-dark">
-                                     <div class="d-flex w-100 justify-content-end">
-                                         <button class="btn btn-sm btn-info" id="btn-new-ctc">Novo Contato</button>
-                                     </div>
-                                 </li>`);
                     data.forEach(function (contact) {
                         container.append(`<li class="list-group-item list-group-item-action">
                                               <div class="d-flex w-100 justify-content-between">
@@ -98,7 +145,7 @@ $(document).ready(function () {
                 }
             })
             .fail(function () {
-                loadSpinner.hide(0);
+                loadSpinnerMain.hide(0);
                 container.replaceWith('<strong class="text-danger">Erro ao ler API</strong>');
             });
     }
@@ -106,28 +153,21 @@ $(document).ready(function () {
     function loadContactToModal(id) {
         $.ajax(`${apiUrl}/contact/${id}`)
             .done(function (data) {
-                $('#contactModalViewTitle').empty().append(`Contato - ${data.name}`);
-                $('#contactModalViewBody').empty()
-                    .append('<p>Telefones:</p>')
-                    .append('<ul class="list-group">')
-                    .append(`<li class="list-group-item list-group-item-dark">
-                                         <div class="d-flex w-100 justify-content-end">
-                                             <button class="btn btn-sm btn-info" id="btn-new-pn">Novo Telefone</button>
-                                         </div>
-                                     </li>`);
-
+                $('#contactModalViewTitle').append(`Contato - ${data.name}`);
+                loadSpinnerCtc.hide(0);
+                $('#btn-new-pn').attr('data-contact', id);
+                $('#contactModalViewBodyStatic').show(0);
                 data.phoneNumbers.forEach(function (phoneNumber) {
                     $('#contactModalViewBody').append(`<li class="list-group-item">
                                                            <div class="d-flex w-100 justify-content-between">
                                                                (${phoneNumber.ddd}) ${phoneNumber.number}
                                                                <div>
-                                                                   <button class="btn btn-sm btn-secondary btn-edit-pn" data-id="${phoneNumber.id}">Editar</button>
+                                                                   <button class="btn btn-sm btn-secondary btn-edit-pn" data-id="${phoneNumber.id}" data-contact="${id}">Editar</button>
                                                                    <button class="btn btn-sm btn-danger btn-rem-pn" data-id="${phoneNumber.id}">Remover</button>
                                                                </div>
                                                            </div>
                                                        </li>`);
                 });
-                $('#contactModalViewBody').append('</ul>')
                 registerPhoneActions();
             });
     }
@@ -152,19 +192,11 @@ $(document).ready(function () {
     }
 
     function registerPhoneActions() {
-        $('#btn-new-pn').click(function (e) {
-            e.preventDefault();
-            $('#phoneModalFormTitle').empty().append('Adicionar Número');
-            $('#phId').val(0);
-            clearPhoneForm();
-            $('#phoneModalForm').modal('show');
-        });
-
         $('.btn-edit-pn').each(function () {
             $(this).click(function (e) {
                 e.preventDefault();
                 $('#phoneModalFormTitle').empty().append('Editar Número');
-                loadPhoneNumberToForm($(this).data('id'), $('#phoneModalForm').modal('show'), function () { alert("Erro ao obter número"); });
+                loadPhoneNumberToForm($(this).attr('data-id'), $('#phoneModalForm').modal('show'), function () { alert("Erro ao obter número"); });
             })
         });
 
@@ -187,18 +219,11 @@ $(document).ready(function () {
             });
         });
 
-        $('#btn-new-ctc').click(function () {
-            $('#contactModalFormTitle').empty().append('Adicionar Contato');
-            $('#ctcId').val(0);
-            clearContactForm();
-            $('#contactModalForm').modal('show');
-        });
-
         $('.btn-edit-ctc').each(function () {
             $(this).click(function (e) {
                 e.preventDefault();
                 $('#contactModalFormTitle').empty().append('Editar Contato');
-                loadContactToForm($(this).data('id'), $('#contactModalForm').modal('show'), function () { alert("Erro ao obter número"); });
+                loadContactToForm($(this).attr('data-id'), $('#contactModalForm').modal('show'), function () { alert("Erro ao obter número"); });
             })
         });
 
@@ -214,6 +239,7 @@ $(document).ready(function () {
     }
 
     // Main
+    $('#contactModalViewBodyStatic').hide();
     registerModalActions();
     loadAllContacts();
 });
