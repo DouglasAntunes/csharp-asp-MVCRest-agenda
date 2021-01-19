@@ -34,6 +34,28 @@ $(document).ready(function () {
         }
     });
 
+    function registerModalActions() {
+        $('#contactModalFormClear').click(function () {
+            $('#ctcName').val('');
+        });
+
+        $('#contactModalFormSave').click(function () {
+            if ($('#ctcForm').valid()) {
+                const modalInputId = $('#ctcId').val();
+                const url = `${apiUrl}/contact${modalInputId == 0 ? '' : `/${$('#ctcId').val()}`}`;
+                $.ajax(url, {
+                    method: modalInputId == 0 ? 'POST' : 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ "name": $('#ctcName').val() })
+                }).done(function () {
+                    loadAllContacts();
+                }).fail(function () {
+
+                });
+            }
+        });
+    }
+
     function loadAllContacts() {
         const container = $("#contact-list");
         $.ajax(`${apiUrl}/contact`)
@@ -157,26 +179,6 @@ $(document).ready(function () {
             $('#contactModalForm').modal('show');
         });
 
-        $('#contactModalFormClear').click(function () {
-            $('#ctcName').val('');
-        });
-
-        $('#contactModalFormSave').click(function () {
-            if ($('#ctcForm').valid()) {
-                const modalInputId = $('#ctcId').val();
-                const url = `${apiUrl}/contact${modalInputId == 0 ? '' : `/${$('#ctcId').val()}`}`;
-                $.ajax(url, {
-                    method: modalInputId == 0 ? 'POST' : 'PUT',
-                    contentType: 'application/json',
-                    data: JSON.stringify({ "name": $('#ctcName').val() })
-                }).done(function () {
-                    loadAllContacts();
-                }).fail(function () {
-
-                });
-            }
-        });
-
         $('.btn-edit-ctc').each(function () {
             $(this).click(function (e) {
                 e.preventDefault();
@@ -197,5 +199,6 @@ $(document).ready(function () {
     }
 
     // Main
+    registerModalActions();
     loadAllContacts();
 });
