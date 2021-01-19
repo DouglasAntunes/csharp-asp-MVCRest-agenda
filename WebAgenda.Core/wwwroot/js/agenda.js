@@ -152,7 +152,7 @@ $(document).ready(function () {
             })
             .fail(function () {
                 loadSpinnerMain.hide(0);
-                $('#btn-new-ctc').hide(0);
+                $('#ctc-top-bar').hide(0);
                 container.replaceWith('<strong class="text-danger">Erro ao ler API</strong>');
             });
     }
