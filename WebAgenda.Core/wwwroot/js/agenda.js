@@ -93,7 +93,8 @@ $(document).ready(function () {
                     contactId
                 })
             }).done(function () {
-                //reload list
+                loadSpinnerCtc.show(0);
+                loadContactToModal(contactId);
             }).fail(function () {
 
             });
@@ -152,7 +153,8 @@ $(document).ready(function () {
     function loadContactToModal(id) {
         $.ajax(`${apiUrl}/contact/${id}`)
             .done(function (data) {
-                $('#contactModalViewTitle').append(`Contato - ${data.name}`);
+                $('#contactModalViewBody').empty();
+                $('#contactModalViewTitle').empty().append(`Contato - ${data.name}`);
                 loadSpinnerCtc.hide(0);
                 $('#btn-new-pn').attr('data-contact', id);
                 $('#contactModalViewBodyStatic').show(0);
@@ -162,7 +164,7 @@ $(document).ready(function () {
                                                                (${phoneNumber.ddd}) ${phoneNumber.number}
                                                                <div>
                                                                    <button class="btn btn-sm btn-secondary btn-edit-pn" data-id="${phoneNumber.id}" data-contact="${id}">Editar</button>
-                                                                   <button class="btn btn-sm btn-danger btn-rem-pn" data-id="${phoneNumber.id}">Remover</button>
+                                                                   <button class="btn btn-sm btn-danger btn-rem-pn" data-id="${phoneNumber.id}" data-contact="${id}">Remover</button>
                                                                </div>
                                                            </div>
                                                        </li>`);
@@ -205,8 +207,9 @@ $(document).ready(function () {
         $('.btn-rem-pn').each(function () {
             $(this).click(function () {
                 if (confirm('Deseja Remover o número ?')) {
+                    const ctcId = $(this).attr('data-contact');
                     $.ajax(`${apiUrl}/phonenumber/${$(this).attr('data-id')}`, { method: 'DELETE' })
-                        .done(loadAllContacts);
+                        .done(function () { loadContactToModal(ctcId); });
                 }
             });
         });
