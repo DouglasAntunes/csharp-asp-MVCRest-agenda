@@ -116,10 +116,6 @@ $(document).ready(function () {
             $('#phoneModalForm').modal('show');
         });
 
-        $('.contact-modal-view-close').each(function () {
-            $(this).click(function () { resetContactModalViewState(); });
-        });
-
         $('#contactModalView').on('hidden.bs.modal', function () {
             resetContactModalViewState();
         });
