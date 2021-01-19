@@ -5,12 +5,18 @@
 <div class="">
     <h2 class="mb-4">Contatos</h2>
 
-    
-
     <ul class="list-group" id="contact-list">
         <li class="list-group-item list-group-item-dark">
-            <div class="d-flex w-100 justify-content-end">
-                <button class="btn btn-sm btn-info" id="btn-new-ctc">Novo Contato</button>
+            <div class="d-flex w-100 justify-content-between">
+                <div class="input-group mb-1">
+                    <input type="text" class="form-control" placeholder="Pesquisar..." id="input-search" aria-label="Pesquisar" aria-describedby="btn-search">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary btn-sm" type="button" id="btn-search">Pesquisar</button>
+                    </div>
+                </div>
+                <div class="input-group mb-1 justify-content-end">
+                    <button class="btn btn-sm btn-primary" id="btn-new-ctc">Novo Contato</button>
+                </div>
             </div>
         </li>
         <div class="d-flex justify-content-center">

@@ -36,6 +36,11 @@ $(document).ready(function () {
         }
     });
 
+    $('#btn-search').click(function () {
+        const query = $('#input-search').val();
+        loadContacts(query);
+    });
+
     function clearContactForm() {
         $('#ctcName').val('');
     }
@@ -71,7 +76,7 @@ $(document).ready(function () {
                     contentType: 'application/json',
                     data: JSON.stringify({ "name": $('#ctcName').val() })
                 }).done(function () {
-                    loadAllContacts();
+                    loadContacts();
                 }).fail(function () {
 
                 });
@@ -121,9 +126,10 @@ $(document).ready(function () {
         });
     }
 
-    function loadAllContacts() {
+    function loadContacts(query = '') {
         const container = $("#contact-list-content");
-        $.ajax(`${apiUrl}/contact`)
+        const endpointUrl = `${apiUrl}/contact${query.length > 0 ? `/find/${query}` : ''}`;
+        $.ajax(endpointUrl)
             .done(function (data) {
                 loadSpinnerMain.hide(0);
                 container.empty();
@@ -237,7 +243,7 @@ $(document).ready(function () {
             $(this).click(function () {
                 if (confirm('Deseja Remover o contato ?')) {
                     $.ajax(`${apiUrl}/contact/${$(this).attr('data-id')}`, { method: 'DELETE' })
-                        .done(loadAllContacts);
+                        .done(loadContacts);
                 }
             });
         });
@@ -246,5 +252,5 @@ $(document).ready(function () {
     // Main
     $('#contactModalViewBodyStatic').hide();
     registerModalActions();
-    loadAllContacts();
+    loadContacts();
 });
