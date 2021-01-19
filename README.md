@@ -36,7 +36,7 @@ Aplicação Web simples, de uma agenda de contatos telefônicos, que permite a c
 
 ## Troubleshoot
 
-Caso ocorra o erro "**Erro ao ler API**", verifique se a porta da url da api localizada na variável `apiUrl` no arquivo `Agenda.cshtml` (WebAgenda.Core\\Views\\Home\\Agenda.cshtml) é a mesma que está em execução no momento.
+Caso ocorra o erro "**Erro ao ler API**", verifique se a porta da url da api localizada na variável `apiUrl` no arquivo `agenda.js` (WebAgenda.Core\\wwwroot\\js\\agenda.js) é a mesma que está em execução no momento.
 
 ## Trabalhos Futuros
 
