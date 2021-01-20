@@ -74,6 +74,28 @@ $(document).ready(function () {
         ctcValidator.resetForm();
     }
 
+    function setStaticBackdropOnModal(modalSelector, isDisabled) {
+        $(modalSelector).data('bs.modal')._config.backdrop = isDisabled ? 'static' : true;
+        $(modalSelector).data('bs.modal')._config.keyboard = !isDisabled;
+    }
+
+    function setBtnState(selector, isDisabled) {
+        if (isDisabled) {
+            $(selector).attr('disabled', 'disabled');
+        } else {
+            $(selector).removeAttr('disabled');
+        }
+    }
+
+    function setBtnStatusModal(isDisabled, modalId, spinnerVar) {
+        setBtnState(`${modalId} .modal-dialog .modal-footer > button`, isDisabled);
+        if (isDisabled) {
+            spinnerVar.show(0);
+        } else {
+            spinnerVar.hide(0);
+        }
+    }
+
     function clearPhoneForm() {
         $('#pnDDD').val('');
         $('#pnNumber').val('');
@@ -98,38 +120,41 @@ $(document).ready(function () {
         });
 
         $('#contactModalFormSave').click(function () {
-            const btnRef = $(this);
-            btnRef.attr('disabled', 'disabled');
-            saveSpinnerCtc.show(0);
             if ($('#ctcForm').valid()) {
                 const modalInputId = $('#ctcId').val();
                 const url = `${apiUrl}/contact${modalInputId == 0 ? '' : `/${modalInputId}`}`;
+
+                setBtnStatusModal(true, '#contactModalForm', saveSpinnerCtc);
+                setStaticBackdropOnModal('#contactModalForm', true);
+
                 $.ajax(url, {
                     method: modalInputId == 0 ? 'POST' : 'PUT',
                     contentType: 'application/json',
                     data: JSON.stringify({ "name": $('#ctcName').val() })
                 }).done(function () {
-					$('#contactModalForm').modal('hide');
+                    $('#contactModalForm').modal('hide');
                     loadContacts();
-                    btnRef.removeAttr('disabled');
-                    saveSpinnerCtc.hide(0);
+                    setStaticBackdropOnModal('#contactModalForm', false);
+                    setBtnStatusModal(false, '#contactModalForm', saveSpinnerCtc);
+                    
                 }).fail(function () {
                     // Show some error message
-                    btnRef.removeAttr('disabled');
-                    saveSpinnerCtc.hide(0);
+                    setBtnStatusModal(false, '#contactModalForm', saveSpinnerCtc);
+                    setStaticBackdropOnModal('#contactModalForm', false);
                 });
             }
         });
 
         $('#phoneModalFormSave').click(function () {
-            const btnRef = $(this);
-            btnRef.attr('disabled', 'disabled');
-            saveSpinnerPn.show(0);
             if ($('#pnForm').valid()) {
                 const contactId = $(this).attr('data-contact');
                 if (contactId == null) return;
                 const modalInputId = $('#phId').val();
                 const url = `${apiUrl}/phonenumber${modalInputId == 0 ? '' : `/${modalInputId}`}`;
+
+                setBtnStatusModal(true, '#phoneModalForm', saveSpinnerPn);
+                setStaticBackdropOnModal('#phoneModalForm', true);
+
                 $.ajax(url, {
                     method: modalInputId == 0 ? 'POST' : 'PUT',
                     contentType: 'application/json',
@@ -142,12 +167,12 @@ $(document).ready(function () {
 					$('#phoneModalForm').modal('hide');
                     loadSpinnerCtc.show(0);
                     loadContactToModal(contactId);
-                    btnRef.removeAttr('disabled');
-                    saveSpinnerPn.hide(0);
+                    setStaticBackdropOnModal('#phoneModalForm', false);
+                    setBtnStatusModal(false, '#phoneModalForm', saveSpinnerPn);
                 }).fail(function () {
                     // Show some error message
-                    btnRef.removeAttr('disabled');
-                    saveSpinnerPn.hide(0);
+                    setBtnStatusModal(false, '#phoneModalForm', saveSpinnerPn);
+                    setStaticBackdropOnModal('#phoneModalForm', false);
                 });
             }
         });
@@ -250,6 +275,8 @@ $(document).ready(function () {
     function registerPhoneActions() {
         $('.btn-edit-pn').each(function () {
             $(this).click(function () {
+                pnValidator.resetForm();
+
                 const ctcId = $(this).attr('data-contact');
                 $('#phoneModalFormSave').attr('data-contact', ctcId);
                 $('#phoneModalFormTitle').empty().append('Editar Número');
@@ -280,6 +307,8 @@ $(document).ready(function () {
 
         $('.btn-edit-ctc').each(function () {
             $(this).click(function () {
+                ctcValidator.resetForm();
+
                 $('#contactModalFormTitle').empty().append('Editar Contato');
                 loadContactToForm($(this).attr('data-id'),
                     function () { $('#contactModalForm').modal('show'); },
