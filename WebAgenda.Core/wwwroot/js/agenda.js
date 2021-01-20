@@ -179,8 +179,10 @@ $(document).ready(function () {
             .done(function (data) {
                 loadSpinnerMain.hide(0);
                 container.empty();
-                if (data.lenght == 0) {
-                    container.replaceWith('<strong class="text-info">Lista Vazia</strong>');
+                if (data.length == 0) {
+                    container.append(`<li class="list-group-item">
+                                          <strong class="d-flex w-100 justify-content-center text-info">Lista Vazia</strong>
+                                      </li>`);
                 } else {
                     data.forEach(function (contact) {
                         container.append(`<li class="list-group-item list-group-item-action">
