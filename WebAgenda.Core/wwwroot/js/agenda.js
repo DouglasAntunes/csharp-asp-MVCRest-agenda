@@ -16,15 +16,34 @@
 /* Script */
 $(document).ready(function () {
     const apiUrl = "https://localhost:44381/api";
+
     const loadSpinnerMain = $("#loading-spinner-main");
     const loadSpinnerCtc = $("#loading-spinner-ctc");
 
-    $('#ctcForm').validate({
+    const ctcValidator = $('#ctcForm').validate({
         rules: {
             name: { required: true }
         },
         messages: {
             name: { required: "O nome do contato é obrigatório!" }
+        }
+    });
+    const pnValidator = $('#pnForm').validate({
+        rules: {
+            ddd: { required: true, minlength: 2, maxlength: 2 },
+            pnumber: { required: true, minlength: 8, maxlength: 9 }
+        },
+        messages: {
+            ddd: {
+                required: "DDD é obrigatório!",
+                minlength: "DDDs de 2 digitos!",
+                maxlength: "DDDs de 2 digitos!"
+            },
+            pnumber: {
+                required: "Número é obrigatório!",
+                minlength: "Número de no mínimo 8 digitos!",
+                maxlength: "Número de no máximo 9 digitos!"
+            }
         }
     });
 
@@ -43,11 +62,13 @@ $(document).ready(function () {
 
     function clearContactForm() {
         $('#ctcName').val('');
+        ctcValidator.resetForm();
     }
 
     function clearPhoneForm() {
         $('#pnDDD').val('');
         $('#pnNumber').val('');
+        pnValidator.resetForm();
     }
 
     function resetContactModalViewState() {
@@ -76,6 +97,7 @@ $(document).ready(function () {
                     contentType: 'application/json',
                     data: JSON.stringify({ "name": $('#ctcName').val() })
                 }).done(function () {
+					$('#contactModalForm').modal('hide');
                     loadContacts();
                 }).fail(function () {
 
@@ -84,26 +106,27 @@ $(document).ready(function () {
         });
 
         $('#phoneModalFormSave').click(function () {
-            //if ($('#pnForm').valid()) {
-            const contactId = $(this).attr('data-contact');
-            if (contactId == null) return;
-            const modalInputId = $('#phId').val();
-            const url = `${apiUrl}/phonenumber${modalInputId == 0 ? '' : `/${modalInputId}`}`;
-            $.ajax(url, {
-                method: modalInputId == 0 ? 'POST' : 'PUT',
-                contentType: 'application/json',
-                data: JSON.stringify({
-                    "ddd": $('#pnDDD').val(),
-                    "number": $('#pnNumber').val(),
-                    contactId
-                })
-            }).done(function () {
-                loadSpinnerCtc.show(0);
-                loadContactToModal(contactId);
-            }).fail(function () {
+            if ($('#pnForm').valid()) {
+                const contactId = $(this).attr('data-contact');
+                if (contactId == null) return;
+                const modalInputId = $('#phId').val();
+                const url = `${apiUrl}/phonenumber${modalInputId == 0 ? '' : `/${modalInputId}`}`;
+                $.ajax(url, {
+                    method: modalInputId == 0 ? 'POST' : 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        "ddd": $('#pnDDD').val(),
+                        "number": $('#pnNumber').val(),
+                        contactId
+                    })
+                }).done(function () {
+					$('#phoneModalForm').modal('hide');
+                    loadSpinnerCtc.show(0);
+                    loadContactToModal(contactId);
+                }).fail(function () {
 
-            });
-            //}
+                });
+            }
         });
 
         $('#btn-new-ctc').click(function () {
