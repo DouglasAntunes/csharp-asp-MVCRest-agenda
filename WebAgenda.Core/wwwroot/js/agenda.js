@@ -138,7 +138,7 @@ $(document).ready(function () {
                     setBtnStatusModal(false, '#contactModalForm', saveSpinnerCtc);
                     
                 }).fail(function () {
-                    // Show some error message
+                    $('#ctc-error').empty().append('Erro ao salvar contato!');
                     setBtnStatusModal(false, '#contactModalForm', saveSpinnerCtc);
                     setStaticBackdropOnModal('#contactModalForm', false);
                 });
@@ -170,7 +170,7 @@ $(document).ready(function () {
                     setStaticBackdropOnModal('#phoneModalForm', false);
                     setBtnStatusModal(false, '#phoneModalForm', saveSpinnerPn);
                 }).fail(function () {
-                    // Show some error message
+                    $('#pn-error').empty().append('Erro ao salvar número!');
                     setBtnStatusModal(false, '#phoneModalForm', saveSpinnerPn);
                     setStaticBackdropOnModal('#phoneModalForm', false);
                 });
@@ -181,6 +181,7 @@ $(document).ready(function () {
             $('#contactModalFormTitle').empty().append('Adicionar Contato');
             $('#ctcId').val(0);
             clearContactForm();
+            $('#ctc-error').empty();
             $('#contactModalForm').modal('show');
         });
 
@@ -189,6 +190,7 @@ $(document).ready(function () {
             $('#phoneModalFormSave').attr('data-contact', $(this).attr('data-contact'));
             $('#phId').val(0);
             clearPhoneForm();
+            $('#pn-error').empty();
             $('#phoneModalForm').modal('show');
         });
 
@@ -205,8 +207,11 @@ $(document).ready(function () {
                 loadSpinnerMain.hide(0);
                 container.empty();
                 if (data.length == 0) {
+                    const emptyMsg = query.length > 0 ?
+                        `Não há resultados para contatos com nome contendo "${query}".`
+                        : 'Não há contatos cadastrados. Crie contatos no botão "Novo Contato".';
                     container.append(`<li class="list-group-item">
-                                          <strong class="d-flex w-100 justify-content-center text-info">Lista Vazia</strong>
+                                          <strong class="d-flex w-100 justify-content-center text-info">${emptyMsg}</strong>
                                       </li>`);
                 } else {
                     data.forEach(function (contact) {
@@ -230,7 +235,7 @@ $(document).ready(function () {
             });
     }
 
-    function loadContactToModal(id) {
+    function loadContactToModal(id, callbackCB, failCB) {
         $.ajax(`${apiUrl}/contact/${id}`)
             .done(function (data) {
                 $('#contactModalViewBody').empty();
@@ -250,12 +255,14 @@ $(document).ready(function () {
                                                        </li>`);
                 });
                 registerPhoneActions();
-            });
+                callbackCB();
+            }).fail(failCB);
     }
 
     function loadContactToForm(id, successCB, failCB) {
         $.ajax(`${apiUrl}/contact/${id}`)
             .done(function (data) {
+                $('#ctc-error').empty()
                 $('#ctcId').val(data.id);
                 $('#ctcName').val(data.name);
                 successCB();
@@ -265,6 +272,7 @@ $(document).ready(function () {
     function loadPhoneNumberToForm(id, successCB, failCB) {
         $.ajax(`${apiUrl}/phonenumber/${id}`)
             .done(function (data) {
+                $('#pn-error').empty()
                 $('#phId').val(data.id);
                 $('#pnDDD').val(data.ddd);
                 $('#pnNumber').val(data.number);
@@ -291,7 +299,11 @@ $(document).ready(function () {
                 if (confirm('Deseja Remover o número ?')) {
                     const ctcId = $(this).attr('data-contact');
                     $.ajax(`${apiUrl}/phonenumber/${$(this).attr('data-id')}`, { method: 'DELETE' })
-                        .done(function () { loadContactToModal(ctcId); });
+                        .done(function () {
+                            loadContactToModal(ctcId, null, function () {
+                                alert("Erro ao obter dados do contato");
+                            });
+                        }).fail(function () { alert("Erro ao remover número do contato"); });
                 }
             });
         });
@@ -300,8 +312,10 @@ $(document).ready(function () {
     function registerContactActions() {
         $('.contact-item').each(function () {
             $(this).click(function () {
-                loadContactToModal($(this).attr('data-id'));
-                $('#contactModalView').modal('show');
+                loadContactToModal($(this).attr('data-id'),
+                    function () { $('#contactModalView').modal('show'); },
+                    function () { alert("Erro ao obter dados do contato"); });
+                
             });
         });
 
@@ -312,7 +326,7 @@ $(document).ready(function () {
                 $('#contactModalFormTitle').empty().append('Editar Contato');
                 loadContactToForm($(this).attr('data-id'),
                     function () { $('#contactModalForm').modal('show'); },
-                    function () { alert("Erro ao obter número"); });
+                    function () { alert("Erro ao obter dados do contato"); });
             });
         });
 
@@ -320,7 +334,8 @@ $(document).ready(function () {
             $(this).click(function () {
                 if (confirm('Deseja Remover o contato ?')) {
                     $.ajax(`${apiUrl}/contact/${$(this).attr('data-id')}`, { method: 'DELETE' })
-                        .done(loadContacts);
+                        .done(loadContacts)
+                        .fail(function () { alert("Erro ao remover contato"); });
                 }
             });
         });
