@@ -10,7 +10,7 @@ using WebAgenda.Core.Data;
 namespace WebAgenda.Core.Migrations
 {
     [DbContext(typeof(WebAgendaContext))]
-    [Migration("20210117183234_InitialCreate")]
+    [Migration("20210120142244_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,9 +50,6 @@ namespace WebAgenda.Core.Migrations
                         .HasColumnType("smallint");
 
                     b.Property<int>("Number")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PersonId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

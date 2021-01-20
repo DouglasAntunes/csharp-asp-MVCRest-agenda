@@ -27,7 +27,6 @@ namespace WebAgenda.Core.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Number = table.Column<int>(type: "int", nullable: false),
                     DDD = table.Column<short>(type: "smallint", nullable: false),
-                    PersonId = table.Column<int>(type: "int", nullable: true),
                     ContactId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
