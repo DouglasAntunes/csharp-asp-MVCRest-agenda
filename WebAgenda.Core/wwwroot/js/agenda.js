@@ -20,6 +20,9 @@ $(document).ready(function () {
     const loadSpinnerMain = $("#loading-spinner-main");
     const loadSpinnerCtc = $("#loading-spinner-ctc");
 
+    const saveSpinnerCtc = $('#save-spinner-ctc');
+    const saveSpinnerPn = $('#save-spinner-pn');
+
     const ctcValidator = $('#ctcForm').validate({
         rules: {
             name: { required: true }
@@ -52,6 +55,12 @@ $(document).ready(function () {
             || (e.keyCode > 47 && e.keyCode < 58) //1-9
             || e.keyCode == 8)) { //Bskp
             return false;
+        }
+    });
+
+    $('#input-search').keyup(function (e) {
+        if (e.keyCode == 13) { //Both NumpadEnter & Normal Enter
+            $('#btn-search').click();
         }
     });
 
@@ -89,6 +98,9 @@ $(document).ready(function () {
         });
 
         $('#contactModalFormSave').click(function () {
+            const btnRef = $(this);
+            btnRef.attr('disabled', 'disabled');
+            saveSpinnerCtc.show(0);
             if ($('#ctcForm').valid()) {
                 const modalInputId = $('#ctcId').val();
                 const url = `${apiUrl}/contact${modalInputId == 0 ? '' : `/${modalInputId}`}`;
@@ -99,13 +111,20 @@ $(document).ready(function () {
                 }).done(function () {
 					$('#contactModalForm').modal('hide');
                     loadContacts();
+                    btnRef.removeAttr('disabled');
+                    saveSpinnerCtc.hide(0);
                 }).fail(function () {
-
+                    // Show some error message
+                    btnRef.removeAttr('disabled');
+                    saveSpinnerCtc.hide(0);
                 });
             }
         });
 
         $('#phoneModalFormSave').click(function () {
+            const btnRef = $(this);
+            btnRef.attr('disabled', 'disabled');
+            saveSpinnerPn.show(0);
             if ($('#pnForm').valid()) {
                 const contactId = $(this).attr('data-contact');
                 if (contactId == null) return;
@@ -123,8 +142,12 @@ $(document).ready(function () {
 					$('#phoneModalForm').modal('hide');
                     loadSpinnerCtc.show(0);
                     loadContactToModal(contactId);
+                    btnRef.removeAttr('disabled');
+                    saveSpinnerPn.hide(0);
                 }).fail(function () {
-
+                    // Show some error message
+                    btnRef.removeAttr('disabled');
+                    saveSpinnerPn.hide(0);
                 });
             }
         });
@@ -274,6 +297,8 @@ $(document).ready(function () {
 
     // Main
     $('#contactModalViewBodyStatic').hide();
+    saveSpinnerCtc.hide();
+    saveSpinnerPn.hide();
     registerModalActions();
     loadContacts();
 });
